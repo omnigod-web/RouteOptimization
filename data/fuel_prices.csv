@@ -1,0 +1,26 @@
+station_id,station_name,city,petrol_price
+1,Indian Oil,Mumbai,106.31
+2,HP Petroleum,Pune,104.50
+3,Bharat Petroleum,Nashik,105.20
+4,Indian Oil,Surat,94.88
+5,HP Petroleum,Vadodara,94.32
+6,Bharat Petroleum,Ahmedabad,93.72
+7,Indian Oil,Udaipur,108.42
+8,HP Petroleum,Jaipur,104.88
+9,Bharat Petroleum,Delhi,94.72
+10,Indian Oil,Agra,94.56
+11,HP Petroleum,Lucknow,94.65
+12,Bharat Petroleum,Kanpur,94.48
+13,Indian Oil,Varanasi,95.12
+14,HP Petroleum,Patna,107.24
+15,Bharat Petroleum,Kolkata,106.03
+16,Indian Oil,Bhopal,108.65
+17,HP Petroleum,Nagpur,106.74
+18,Bharat Petroleum,Hyderabad,109.66
+19,Indian Oil,Bangalore,101.94
+20,HP Petroleum,Chennai,102.63
+21,Bharat Petroleum,Coimbatore,102.89
+22,Indian Oil,Kochi,107.67
+23,HP Petroleum,Kozhikode,107.45
+24,Bharat Petroleum,Mangalore,101.78
+25,Indian Oil,Hubli,101.23
