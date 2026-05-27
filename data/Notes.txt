@@ -1,0 +1,15 @@
+Businesss logic---
+1. Find lat/lng of start city from our JSON
+2. Find lat/lng of end city from our JSON
+3. For each station calculate:
+   - is it between start and end? (within route corridor)
+   - distance from start
+4. Sort stations by distance from start
+5. Pick cheapest station within every 400km range
+6. Calculate total fuel cost
+7. Return the optimized stops
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+Key Formula — Straight Line Distance (Haversine -Formula)
+Pythagoeras wont work here coz its a sphere
+
