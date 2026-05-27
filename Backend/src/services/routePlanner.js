@@ -105,14 +105,32 @@ export const planFuelStops= async (start , end)=>{
                 remainingStations = remainingStations.slice(cheapestIndex + 1);
             }
             // console.log(stationsWithPrice);
-            console.log("Your optimal stops: ",fuelStops);
+            // console.log("Your optimal stops: ",fuelStops);
             // console.log(endStation);
-                        
-            return{
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
+//           Summary--->Calculation Total distance, Total Estimated fuel consumption, path to follow
+//----------------------------------------------------------------------------------------------------------------------------------------------
+            const MILEAGE = 15; // km per litre
+
+            const totalCost = fuelStops.reduce((acc, station) => {
+                const dist = getDistance(
+                    startStation.lat, startStation.lng,
+                    station.lat, station.lng
+                );
+                const litresNeeded = dist / MILEAGE;
+                return acc + (litresNeeded * station.petrol_price);
+            }, 0);
+
+            return {
                 start,
                 end,
-                fuelStops:["Station A" , "Station B"],
-                totalCost:120.50,
-                routeStations
-            }
+                totalDistanceKm: Math.round(totalDistance),
+                fuelStops: fuelStops.map(s => ({
+                    city: s.city,
+                    station: s.station_name,
+                    petrol_price: `₹${s.petrol_price}`,
+                })),
+                estimatedTotalCost: `₹${totalCost.toFixed(2)}`
+            };
 }

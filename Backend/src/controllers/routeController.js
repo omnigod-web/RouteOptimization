@@ -13,7 +13,7 @@ export const planRoute =async (req ,res)=>{
         return res.status(400).json({error:"same input for start and end"})
     }
     try {
-        const result = await planFuelStops(start , end);
+        const result = await planFuelStops(start , end);  //Business logic in planFuelStop---> open Defination to Explore
          res.status(200).json(result)
     } catch (err) {
         res.status(500).json({
