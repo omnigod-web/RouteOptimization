@@ -16,6 +16,14 @@ app.use(rateLimiter)
 
 app.use('/api', routeRouter)
 
+app.get('/', (req, res) => {
+    res.json({
+        status: 'ok',
+        service: 'Fuel Optimization API',
+        routes: ['/health', '/api/route']
+    })
+})
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' })
 })
