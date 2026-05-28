@@ -77,30 +77,35 @@ export const planFuelStops= async (start , end)=>{
             let remainingStations = [...sorted];
 
             while(remainingStations.length > 0){
-                // find all stations reachable from current position
+                const distToEnd = getDistance(
+                    lastStopLat, lastStopLng,
+                    endStation.lat, endStation.lng
+                );
+
                 const reachable = remainingStations.filter(station => {
-                    const dist = getDistance(
+                    const distFromLast = getDistance(
                         lastStopLat, lastStopLng,
                         station.lat, station.lng
                     );
-                    return dist <= TANK_RANGE;
+                    const stationDistToEnd = getDistance(
+                        station.lat, station.lng,
+                        endStation.lat, endStation.lng
+                    );
+                    // ✅ station must be within tank range
+                    // ✅ AND must be closer to end than current position
+                    return distFromLast <= TANK_RANGE && stationDistToEnd < distToEnd;
                 });
 
-                // no reachable stations left
                 if(reachable.length === 0) break;
 
-                // pick the CHEAPEST among reachable ones
                 const cheapest = reachable.reduce((best, station) => {
                     return station.petrol_price < best.petrol_price ? station : best;
                 });
 
                 fuelStops.push(cheapest);
-
-                // update current position
                 lastStopLat = cheapest.lat;
                 lastStopLng = cheapest.lng;
 
-                // remove all stations up to and including cheapest from remaining
                 const cheapestIndex = remainingStations.indexOf(cheapest);
                 remainingStations = remainingStations.slice(cheapestIndex + 1);
             }
@@ -111,26 +116,40 @@ export const planFuelStops= async (start , end)=>{
 //----------------------------------------------------------------------------------------------------------------------------------------------
 //           Summary--->Calculation Total distance, Total Estimated fuel consumption, path to follow
 //----------------------------------------------------------------------------------------------------------------------------------------------
-            const MILEAGE = 15; // km per litre
+           const MILEAGE = 15; // km per litre
+            const ROAD_FACTOR = 1.3; // roads are ~30% longer than straight line
 
-            const totalCost = fuelStops.reduce((acc, station) => {
-                const dist = getDistance(
-                    startStation.lat, startStation.lng,
-                    station.lat, station.lng
-                );
-                const litresNeeded = dist / MILEAGE;
-                return acc + (litresNeeded * station.petrol_price);
-            }, 0);
+            const allPoints = [
+                { lat: startStation.lat, lng: startStation.lng, petrol_price: fuelStops[0]?.petrol_price || 100 },
+                ...fuelStops,
+                { lat: endStation.lat, lng: endStation.lng, petrol_price: fuelStops[fuelStops.length-1]?.petrol_price || 100 }
+            ];
 
+            let totalCost = 0;
+            for(let i = 0; i < allPoints.length - 1; i++){
+                const segmentDist = getDistance(
+                    allPoints[i].lat, allPoints[i].lng,
+                    allPoints[i+1].lat, allPoints[i+1].lng
+                ) * ROAD_FACTOR;
+                const litres = segmentDist / MILEAGE;
+                totalCost += litres * allPoints[i].petrol_price;
+            }
+            console.log("Total route stations found:", routeStations.length);
+            console.log("Sorted stations:", sorted.map(s => s.city));
+            console.log("Tank range:", TANK_RANGE);
             return {
                 start,
                 end,
-                totalDistanceKm: Math.round(totalDistance),
+                totalDistanceKm: Math.round(totalDistance * ROAD_FACTOR),
                 fuelStops: fuelStops.map(s => ({
                     city: s.city,
                     station: s.station_name,
                     petrol_price: `₹${s.petrol_price}`,
+                    lat: s.lat,
+                    lng: s.lng
                 })),
-                estimatedTotalCost: `₹${totalCost.toFixed(2)}`
+                estimatedTotalCost: `₹${totalCost.toFixed(2)}`,
+                startCoords: { lat: startStation.lat, lng: startStation.lng },
+                endCoords: { lat: endStation.lat, lng: endStation.lng }
             };
 }

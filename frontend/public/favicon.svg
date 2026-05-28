@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="50" fill="#E8572A"/>
+  
+  <!-- Fuel pump body -->
+  <rect x="25" y="30" width="30" height="40" rx="4" fill="white"/>
+  
+  <!-- Pump screen -->
+  <rect x="30" y="35" width="20" height="12" rx="2" fill="#1B3A4B"/>
+  
+  <!-- Pump buttons -->
+  <rect x="30" y="52" width="8" height="5" rx="1" fill="#F5C518"/>
+  <rect x="42" y="52" width="8" height="5" rx="1" fill="#F5C518"/>
+  
+  <!-- Pump base -->
+  <rect x="23" y="68" width="34" height="4" rx="2" fill="white"/>
+  
+  <!-- Nozzle arm -->
+  <rect x="55" y="35" width="4" height="20" rx="2" fill="white"/>
+  
+  <!-- Nozzle -->
+  <rect x="53" y="52" width="12" height="5" rx="2" fill="white"/>
+  
+  <!-- Fuel drop -->
+  <circle cx="72" cy="62" r="5" fill="#F5C518"/>
+</svg>

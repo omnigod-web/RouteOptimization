@@ -1,18 +1,30 @@
-import express from "express";
-import dotenv from "dotenv";
-import routeRouter from "./routes/route.js";
-// import rateLimit from "express-rate-limit";
-import { rateLimiter } from "./middlewares/rateLimiter.js";
+import express from 'express'
+import dotenv from 'dotenv'
+import cors from 'cors'
+import { rateLimiter } from './middlewares/rateLimiter.js'
+import routeRouter from './routes/route.js'
 
-dotenv.config();
-const app = express();
+dotenv.config()
 
-app.use(express.json());
-app.use(rateLimiter);
-app.use('/api' , routeRouter);
+const app = express()  // ← 1. create app FIRST
 
-const PORT=process.env.PORT||3000;
+// 2. then use middlewares
+app.use(cors({
+    origin: 'http://localhost:5173'
+}))
+app.use(express.json())
+app.use(rateLimiter)
 
-app.listen(PORT,()=>{
-    console.log(`server is listening you at ${PORT}.. go Ahead`);
+// 3. then routes
+app.use('/api', routeRouter)
+
+// 4. health check
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' })
+})
+
+// 5. start server
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
 })
