@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import { rateLimiter } from './middlewares/rateLimiter.js'
 import routeRouter from './routes/route.js'
+import morgan from 'morgan'
 
 dotenv.config()
 
@@ -11,6 +12,7 @@ const app = express()
 app.use(cors({
     origin: process.env.CORS_ORIGIN || '*'
 }))
+app.use(morgan('dev'))
 app.use(express.json())
 app.use(rateLimiter)
 

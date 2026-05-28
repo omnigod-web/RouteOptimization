@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/app.js",
-    "chalu": "nodemon node src/app.js"
+    "start": "node src/cluster.js",
+    "dev": "nodemon src/cluster.js"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +18,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "express-rate-limiter": "^1.3.1",
+    "morgan": "^1.10.1",
     "nodemon": "^3.1.14"
   }
 }
