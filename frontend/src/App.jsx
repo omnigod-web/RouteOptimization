@@ -6,6 +6,8 @@ import FuelTicker from './components/FuelTicker'
 import MapView from './components/MapView'
 import ResultPanel from './components/ResultPanel'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 function App() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -14,7 +16,7 @@ function App() {
   const handleSearch = async (start, end) => {
     setLoading(true)
     try {
-      const res = await axios.post('http://localhost:3000/api/route', { start, end })
+      const res = await axios.post(`${API_URL}/api/route`, { start, end })
       setResult(res.data)
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
