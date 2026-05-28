@@ -22,7 +22,13 @@ function App() {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 300)
     } catch (err) {
-      alert(err.response?.data?.error || 'Something went wrong')
+      const apiMessage = err.response?.data?.message
+      const apiError = err.response?.data?.error
+      const networkMessage = err.request
+        ? `Could not reach the backend API at ${API_URL}. Check VITE_API_URL in Vercel.`
+        : 'Something went wrong'
+
+      alert([apiMessage, apiError].filter(Boolean).join(': ') || networkMessage)
     } finally {
       setLoading(false)
     }
