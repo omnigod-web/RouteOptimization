@@ -16,8 +16,10 @@ export const planRoute =async (req ,res)=>{
         const result = await planFuelStops(start , end);  //Business logic in planFuelStop---> open Defination to Explore
          res.status(200).json(result)
     } catch (err) {
-        res.status(500).json({
-            message:"something went wronggggggggggg",
+        const statusCode = err.message.includes('cities not found') ? 400 : 500
+
+        res.status(statusCode).json({
+            message:"Could not plan this route",
             error: err.message
         })
     }
