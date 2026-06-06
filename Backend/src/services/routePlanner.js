@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import csvtojson from 'csvtojson';
 import { routeConfig } from '../config/routeConfig.js';
 import { getWeatherForCities } from './weatherService.js'
+import { getRouteSafetyAdvisory } from './safetyService.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -133,7 +134,7 @@ export const planFuelStops = async (start, end) => {
         lng: stop.lng,
         weather: weatherData[i]
     }))
-
+    
     // 7. calculate total cost segment by segment
     //    price used = destination station price (where you actually refuel)
     const allPoints = [
@@ -141,36 +142,50 @@ export const planFuelStops = async (start, end) => {
         ...fuelStops,
         { lat: endStation.lat, lng: endStation.lng }
     ]
-
+    
     let totalCost = 0
     for(let i = 0; i < allPoints.length - 1; i++){
         const segmentDist = getDistance(
             allPoints[i].lat, allPoints[i].lng,
             allPoints[i + 1].lat, allPoints[i + 1].lng
         ) * routeConfig.roadFactor
-
+        
         const litres = segmentDist / routeConfig.mileage
-
+        
         // refuel at destination of each segment
         // last segment uses last fuel stop price
         const price = allPoints[i + 1].petrol_price
-            || fuelStops[fuelStops.length - 1]?.petrol_price
-            || 100
-
+        || fuelStops[fuelStops.length - 1]?.petrol_price
+        || 100
+        
         totalCost += litres * price
     }
-
+    
     // 8. build final response
     const totalDistanceKm = Math.round(totalDistance * routeConfig.roadFactor)
+    const estimatedTravelTime = calculateTravelTime(totalDistanceKm)
+    
+        // build route summary for AI
+            const routeSummary = {
+                start,
+                end,
+                totalDistanceKm,
+                estimatedTravelTime,
+                fuelStops: fuelStopsWithWeather
+            }
+    
+            // get AI safety advisory
+            const safetyAdvisory = await getRouteSafetyAdvisory(routeSummary)
 
     return {
         start,
         end,
         totalDistanceKm,
-        estimatedTravelTime: calculateTravelTime(totalDistanceKm),
+        estimatedTravelTime,
         fuelStops: fuelStopsWithWeather,
         estimatedTotalCost: `₹${totalCost.toFixed(2)}`,
         startCoords: { lat: startStation.lat, lng: startStation.lng },
-        endCoords: { lat: endStation.lat, lng: endStation.lng }
+        endCoords: { lat: endStation.lat, lng: endStation.lng },
+        safetyAdvisory
     }
 }
