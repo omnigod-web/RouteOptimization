@@ -5,18 +5,20 @@ import HeroSection from './components/HeroSection'
 import FuelTicker from './components/FuelTicker'
 import MapView from './components/MapView'
 import ResultPanel from './components/ResultPanel'
+import SafetyAdvisory from './components/SafetyAdvisory'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 function App() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
-  const resultRef = useRef(null) 
+  const resultRef = useRef(null)
 
-  const handleSearch = async (start, end) => {
+  const handleSearch = async (start, end, vehicleType) => {
     setLoading(true)
     try {
-      const res = await axios.post(`${API_URL}/api/route`, { start, end })
+      const res = await axios.post(`${API_URL}/api/route`, { start, end, vehicleType })
+   
       setResult(res.data)
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -27,7 +29,6 @@ function App() {
       const networkMessage = err.request
         ? `Could not reach the backend API at ${API_URL}. Check VITE_API_URL in Vercel.`
         : 'Something went wrong'
-
       alert([apiMessage, apiError].filter(Boolean).join(': ') || networkMessage)
     } finally {
       setLoading(false)
@@ -60,31 +61,24 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-          {/* Step 1 */}
           <div className="bg-white rounded-3xl p-8 shadow-md border border-orange-100 text-center relative">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-sm">1</div>
             <div className="text-5xl mb-4">📍</div>
             <h3 className="text-xl font-black text-slate-800 mb-2">Enter Your Route</h3>
             <p className="text-slate-500 text-sm leading-relaxed">Type your start and destination city anywhere across India</p>
           </div>
-
-          {/* Step 2 */}
           <div className="bg-white rounded-3xl p-8 shadow-md border border-orange-100 text-center relative">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-sm">2</div>
             <div className="text-5xl mb-4">🧠</div>
             <h3 className="text-xl font-black text-slate-800 mb-2">Smart Optimization</h3>
             <p className="text-slate-500 text-sm leading-relaxed">Our algorithm finds the cheapest fuel stations along your route within tank range</p>
           </div>
-
-          {/* Step 3 */}
           <div className="bg-white rounded-3xl p-8 shadow-md border border-orange-100 text-center relative">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-sm">3</div>
             <div className="text-5xl mb-4">🗺️</div>
             <h3 className="text-xl font-black text-slate-800 mb-2">Follow The Map</h3>
             <p className="text-slate-500 text-sm leading-relaxed">See your optimized route on the map with all fuel stops marked clearly</p>
           </div>
-
         </div>
 
         {/* Stats bar */}
@@ -126,6 +120,12 @@ function App() {
 
         </div>
       </section>
+
+      {/* Safety Advisory Section */}
+      {result && (
+        <SafetyAdvisory safety={result.safetyAdvisory} />
+      )}
+
     </div>
   )
 }

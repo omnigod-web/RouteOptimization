@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { MdLocationOn, MdFlag, MdLocalGasStation, MdShare, MdRoute, MdAttachMoney } from 'react-icons/md'
+import { MdLocationOn, MdFlag, MdLocalGasStation, MdShare, MdRoute, MdAttachMoney, MdAccessTime } from 'react-icons/md'
 
 const StopCard = ({ stop, index }) => (
   <motion.div
@@ -13,6 +13,19 @@ const StopCard = ({ stop, index }) => (
     <div className="flex-1">
       <p className="font-bold text-slate-800">{stop.city}</p>
       <p className="text-sm text-slate-500">{stop.station}</p>
+      {/* Weather row */}
+      {stop.weather?.temperature && (
+        <div className="flex items-center gap-2 mt-1">
+          <img
+            src={`https://openweathermap.org/img/wn/${stop.weather.icon}.png`}
+            alt={stop.weather.condition}
+            className="w-6 h-6"
+          />
+          <span className="text-xs text-slate-500">
+            {stop.weather.temperature}°C · {stop.weather.description}
+          </span>
+        </div>
+      )}
     </div>
     <div className="text-right">
       <p className="font-black text-orange-500 text-lg">{stop.petrol_price}</p>
@@ -22,6 +35,8 @@ const StopCard = ({ stop, index }) => (
 )
 
 const ResultPanel = ({ result, onShare }) => {
+
+  // ✅ check result first before anything else
   if (!result) return (
     <div className="h-full flex items-center justify-center text-center text-slate-400 p-8">
       <div>
@@ -31,6 +46,11 @@ const ResultPanel = ({ result, onShare }) => {
       </div>
     </div>
   )
+
+  // ✅ safe to access result properties here
+  const travelTime = result.estimatedTravelTime?.formatted || 'N/A'
+  console.log(travelTime);
+  
 
   return (
     <motion.div
@@ -57,8 +77,8 @@ const ResultPanel = ({ result, onShare }) => {
           <MdFlag className="text-blue-500 text-2xl shrink-0" />
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* Stats — 4 cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="bg-blue-50 rounded-2xl p-4 text-center">
             <MdRoute className="text-blue-500 text-2xl mx-auto mb-1" />
             <p className="text-2xl font-black text-slate-800">{result.totalDistanceKm}</p>
@@ -71,8 +91,13 @@ const ResultPanel = ({ result, onShare }) => {
           </div>
           <div className="bg-green-50 rounded-2xl p-4 text-center">
             <MdAttachMoney className="text-green-500 text-2xl mx-auto mb-1" />
-            <p className="text-xl font-black text-slate-800">{result.estimatedTotalCost}</p>
+            <p className="text-lg font-black text-slate-800">{result.estimatedTotalCost}</p>
             <p className="text-xs text-slate-500">est. cost</p>
+          </div>
+          <div className="bg-yellow-50 rounded-2xl p-4 text-center">
+            <MdAccessTime className="text-yellow-500 text-2xl mx-auto mb-1" />
+            <p className="text-xl font-black text-slate-800">{result.estimatedTravelTime?.formatted || 'N/A'}</p>
+            <p className="text-xs text-slate-500">travel time</p>
           </div>
         </div>
       </div>

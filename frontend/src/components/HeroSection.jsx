@@ -2,13 +2,21 @@ import { useState } from 'react'
 import { MdLocationOn, MdFlag, MdDirectionsCar } from 'react-icons/md'
 import { motion } from 'framer-motion'
 
+const vehicles = [
+  { type: 'bike', label: 'Bike', emoji: '🏍️' },
+  { type: 'car', label: 'Car', emoji: '🚗' },
+  { type: 'suv', label: 'SUV', emoji: '🚙' },
+  { type: 'truck', label: 'Truck', emoji: '🚛' },
+]
+
 const HeroSection = ({ onSearch, loading }) => {
   const [start, setStart] = useState('')
   const [end, setEnd] = useState('')
+  const [vehicleType, setVehicleType] = useState('car') // ← default car
 
   const handleSubmit = () => {
     if (!start || !end) return
-    onSearch(start, end)
+    onSearch(start, end, vehicleType) // ← pass vehicleType
   }
 
   return (
@@ -49,6 +57,27 @@ const HeroSection = ({ onSearch, loading }) => {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-3xl shadow-xl p-6 md:p-8 border border-orange-100">
 
+          {/* Vehicle Selector */}
+          <div className="mb-6">
+            <p className="text-slate-500 text-sm font-medium mb-3 text-left">Select Vehicle Type</p>
+            <div className="grid grid-cols-4 gap-3">
+              {vehicles.map(v => (
+                <button
+                  key={v.type}
+                  onClick={() => setVehicleType(v.type)}
+                  className={`flex flex-col items-center gap-1 py-3 px-2 rounded-2xl border-2 transition-all ${
+                    vehicleType === v.type
+                      ? 'border-orange-500 bg-orange-50 text-orange-600'
+                      : 'border-slate-100 bg-white text-slate-500 hover:border-orange-200'
+                  }`}>
+                  <span className="text-2xl">{v.emoji}</span>
+                  <span className="text-xs font-bold">{v.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* City Inputs */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
 
             {/* Start Input */}
