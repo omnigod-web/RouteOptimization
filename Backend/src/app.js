@@ -6,9 +6,7 @@ import routeRouter from './routes/route.js'
 import morgan from 'morgan'
 import redis from './config/redis.js'
 
-// add this temporarily at top of app.js
-await redis.flushall()
-console.log('🗑️ Cache cleared!')
+
 dotenv.config()
 
 const app = express()
