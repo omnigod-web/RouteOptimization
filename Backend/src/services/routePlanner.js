@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import csvtojson from 'csvtojson';
 import { routeConfig } from '../config/routeConfig.js';
+import { vehicleProfiles, defaultVehicle } from '../config/vehicleConfig.js';
 import { getWeatherForCities } from './weatherService.js'
 import { getRouteSafetyAdvisory } from './safetyService.js'
 
@@ -44,7 +45,10 @@ const calculateTravelTime = (distanceKm) => {
 }
 
 // ── Main Service ──────────────────────────────────────────────────────────────
-export const planFuelStops = async (start, end) => {
+export const planFuelStops = async (start, end, vehicleType = defaultVehicle) => {
+
+    // get vehicle profile
+    const vehicle = vehicleProfiles[vehicleType] || vehicleProfiles[defaultVehicle]
 
     // 1. find start and end stations
     const startStation = stations.find(s => s.city.toLowerCase() === start.toLowerCase())
@@ -83,8 +87,7 @@ export const planFuelStops = async (start, end) => {
         return distA - distB
     })
 
-    // 6. greedy algorithm — pick cheapest within tank range
-    //    always making progress toward destination
+    // 6. greedy algorithm — using vehicle tank range
     const fuelStops = []
     let lastStopLat = startStation.lat
     let lastStopLng = startStation.lng
@@ -105,7 +108,8 @@ export const planFuelStops = async (start, end) => {
                 station.lat, station.lng,
                 endStation.lat, endStation.lng
             )
-            return distFromLast <= routeConfig.tankRange && stationDistToEnd < distToEnd
+            // use vehicle.tankRange instead of routeConfig.tankRange
+            return distFromLast <= vehicle.tankRange && stationDistToEnd < distToEnd
         })
 
         if(reachable.length === 0) break
@@ -121,11 +125,11 @@ export const planFuelStops = async (start, end) => {
         const cheapestIndex = remainingStations.indexOf(cheapest)
         remainingStations = remainingStations.slice(cheapestIndex + 1)
     }
-    // get weather for all fuel stop cities in parallel
+
+    // 7. get weather for all stops in parallel
     const stopCities = fuelStops.map(s => s.city)
     const weatherData = await getWeatherForCities(stopCities)
 
-    // merge weather into fuel stops
     const fuelStopsWithWeather = fuelStops.map((stop, i) => ({
         city: stop.city,
         station: stop.station_name,
@@ -134,52 +138,51 @@ export const planFuelStops = async (start, end) => {
         lng: stop.lng,
         weather: weatherData[i]
     }))
-    
-    // 7. calculate total cost segment by segment
-    //    price used = destination station price (where you actually refuel)
+
+    // 8. calculate total cost using vehicle mileage
     const allPoints = [
         { lat: startStation.lat, lng: startStation.lng },
         ...fuelStops,
         { lat: endStation.lat, lng: endStation.lng }
     ]
-    
+
     let totalCost = 0
     for(let i = 0; i < allPoints.length - 1; i++){
         const segmentDist = getDistance(
             allPoints[i].lat, allPoints[i].lng,
             allPoints[i + 1].lat, allPoints[i + 1].lng
         ) * routeConfig.roadFactor
-        
-        const litres = segmentDist / routeConfig.mileage
-        
-        // refuel at destination of each segment
-        // last segment uses last fuel stop price
+
+        const litres = segmentDist / vehicle.mileage  // ← vehicle mileage!
+
         const price = allPoints[i + 1].petrol_price
-        || fuelStops[fuelStops.length - 1]?.petrol_price
-        || 100
-        
+            || fuelStops[fuelStops.length - 1]?.petrol_price
+            || 100
+
         totalCost += litres * price
     }
-    
-    // 8. build final response
+
+    // 9. build final response
     const totalDistanceKm = Math.round(totalDistance * routeConfig.roadFactor)
     const estimatedTravelTime = calculateTravelTime(totalDistanceKm)
-    
-        // build route summary for AI
-            const routeSummary = {
-                start,
-                end,
-                totalDistanceKm,
-                estimatedTravelTime,
-                fuelStops: fuelStopsWithWeather
-            }
-    
-            // get AI safety advisory
-            const safetyAdvisory = await getRouteSafetyAdvisory(routeSummary)
+
+    // AI safety advisory
+    const routeSummary = {
+        start, end, totalDistanceKm,
+        estimatedTravelTime,
+        fuelStops: fuelStopsWithWeather
+    }
+    const safetyAdvisory = await getRouteSafetyAdvisory(routeSummary)
 
     return {
         start,
         end,
+        vehicle: {
+            type: vehicleType,
+            label: vehicle.label,
+            mileage: vehicle.mileage,
+            tankRange: vehicle.tankRange
+        },
         totalDistanceKm,
         estimatedTravelTime,
         fuelStops: fuelStopsWithWeather,
