@@ -11,7 +11,7 @@
 
 ## 🌟 Live Demo
 
-- **Frontend:** [your-frontend.vercel.app](https://route-optimization-nishant.vercel.app/)
+- **Frontend:** [https://route-optimization-nishant.vercel.app/](https://route-optimization-nishant.vercel.app/)
 - **Backend API:** [smarttravel-9bjd.onrender.com](https://smarttravel-9bjd.onrender.com)
 
 ---
