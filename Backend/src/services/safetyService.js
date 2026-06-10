@@ -1,8 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import redis from '../config/redis.js'
 
-console.log('API Key exists:', !!process.env.GEMINI_API_KEY)
-console.log('API Key length:', process.env.GEMINI_API_KEY?.length)
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' })
 const SAFETY_TTL = 3600 // ← NEW: 1 hour cache
