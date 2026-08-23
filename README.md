@@ -2,7 +2,8 @@
 
 > A full-stack intelligent route planning application that finds the **cheapest fuel stops** across Indian highways, powered by real-time weather data and AI-driven safety advisories.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-FuelWise-orange)](https://your-frontend.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-FuelWise-orange)](https://route-optimization-nishant.vercel.app/)
+
 [![Backend](https://img.shields.io/badge/Backend-Render-blue)](https://smarttravel-9bjd.onrender.com)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -10,7 +11,7 @@
 
 ## 🌟 Live Demo
 
-- **Frontend:** [your-frontend.vercel.app](https://your-frontend.vercel.app)
+- **Frontend:** [https://route-optimization-nishant.vercel.app/](https://route-optimization-nishant.vercel.app/)
 - **Backend API:** [smarttravel-9bjd.onrender.com](https://smarttravel-9bjd.onrender.com)
 
 ---
