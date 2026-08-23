@@ -14,7 +14,7 @@ app.set('trust proxy', 1)
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'https://route-optimization-nishant.vercel.app/' // ← add your Vercel URL
+        'https://route-optimization-nishant.vercel.app' // ← add your Vercel URL
     ]
 }))
 app.use(morgan('dev'))

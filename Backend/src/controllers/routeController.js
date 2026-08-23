@@ -7,6 +7,8 @@ export const planRoute = async (req, res) => {
     const vehicleType = req.body.vehicleType || 'car'
 
     // include vehicleType in cache key
+    console.log("about to create a cache key ");
+    
     const cacheKey = `route:${start.toLowerCase()}:${end.toLowerCase()}:${vehicleType}`
 
     try {
@@ -27,6 +29,7 @@ export const planRoute = async (req, res) => {
         // cache miss — calculate
         console.log(`🔄 Cache MISS for ${cacheKey}`)
         const result = await planFuelStops(start, end, vehicleType)
+
 
         // store in cache
         try {

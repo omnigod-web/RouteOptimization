@@ -9,7 +9,7 @@ if (!redisToken) {
     throw new Error('REDIS_TOKEN is missing. Add it to Backend/.env or Vercel environment variables.')
 }
 
-const redis = new Redis(`rediss://default:${redisToken}@neutral-polliwog-139027.upstash.io:6379`, {
+const redis = new Redis(`rediss://default:${redisToken}@complete-sheep-122225.upstash.io:6379`, {
     maxRetriesPerRequest: 1,
     retryStrategy: (times) => {
         if(times > 3) return null
