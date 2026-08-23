@@ -7,7 +7,9 @@ import MapView from './components/MapView'
 import ResultPanel from './components/ResultPanel'
 import SafetyAdvisory from './components/SafetyAdvisory'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000' 
+// const API_URL = 'http://localhost:3000' // development Environment
 
 function App() {
   const [loading, setLoading] = useState(false)
